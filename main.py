@@ -1,0 +1,47 @@
+CHUNK_SIZE = 1
+BYTES_PER_LINE = 10
+NUMBER_PADDING = 25
+
+HEADER = '\033[95m'
+OKBLUE = '\033[94m'
+OKGREEN = '\033[92m'
+WARNING = '\033[93m'
+FAIL = '\033[91m'
+ENDC = '\033[0m'
+BOLD = '\033[1m'
+UNDERLINE = '\033[4m'
+
+file_a_path = "C:/Users/ryan/PycharmProjects/hex-diff/UILayout.lsb"
+file_b_path = "C:/Users/ryan/PycharmProjects/hex-diff/UILayout2.lsb"
+
+file_output = ""
+
+with open(file_a_path, "rb") as file_a, open(file_b_path, "rb") as file_b:
+    file_a_bytes = file_a.read(CHUNK_SIZE)
+    file_b_bytes = file_b.read(CHUNK_SIZE)
+
+    bytes_read = 0
+
+    file_a_line_buffer = []
+    file_b_line_buffer = []
+    while file_a_bytes and file_b_bytes:
+        bytes_read += 1
+
+        file_a_bytes = file_a.read(CHUNK_SIZE)
+        file_b_bytes = file_b.read(CHUNK_SIZE)
+
+        if file_a_bytes == file_b_bytes:
+            file_a_line_buffer.append(file_a_bytes.hex())
+            file_b_line_buffer.append(file_b_bytes.hex())
+        else:
+            file_a_line_buffer.append(FAIL + file_a_bytes.hex() + ENDC)
+            file_b_line_buffer.append(FAIL + file_b_bytes.hex() + ENDC)
+
+        if bytes_read % BYTES_PER_LINE == 0:
+            file_output += "{}{}{:{}}".format(OKBLUE, str(bytes_read), ENDC, NUMBER_PADDING - len(str(bytes_read)))
+            file_output += " ".join(file_a_line_buffer) + "\t\t" + " ".join(file_b_line_buffer)
+            file_output += "\n"
+            file_a_line_buffer = []
+            file_b_line_buffer = []
+
+print(file_output)
